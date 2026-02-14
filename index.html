@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi San Valentín 💖</title>
+
+<style>
+body{
+    margin:0;
+    padding:0;
+    font-family:'Comic Sans MS', cursive;
+    background: linear-gradient(135deg,#ff8fb1,#ffc2e2);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    overflow:hidden;
+    transition:background 1.5s ease;
+}
+
+/* Fondo cuando acepta */
+body.aceptado{
+    background: linear-gradient(135deg,#ff2e63,#ff9ec4,#ffd6e8);
+}
+
+/* CARD */
+.card{
+    background:white;
+    padding:40px;
+    border-radius:25px;
+    text-align:center;
+    box-shadow:0 0 30px rgba(0,0,0,0.3);
+    position:relative;
+    max-width:500px;
+    z-index:2;
+}
+
+h1{
+    color:#ff2e63;
+}
+
+/* BOTONES */
+button{
+    padding:15px 25px;
+    font-size:18px;
+    border:none;
+    border-radius:15px;
+    cursor:pointer;
+    margin:10px;
+    transition:0.3s;
+}
+
+#si{
+    background:#ff2e63;
+    color:white;
+}
+
+#si:hover{
+    background:#ff0040;
+    transform:scale(1.1);
+}
+
+#no{
+    background:gray;
+    color:white;
+    position:absolute;
+}
+
+/* ===== MENSAJES DEBAJO DEL SÍ (VERSIÓN CORRECTA) ===== */
+
+.mensajes{
+    margin-top:15px;
+    height:30px;
+    overflow:hidden;
+    position:relative;
+}
+
+.mensaje{
+    position:absolute;
+    width:100%;
+    left:100%;
+    text-align:center;
+    font-weight:bold;
+    color:#ff2e63;
+    font-size:16px;
+    text-shadow:0 0 10px #ff8fab,0 0 15px #ff4d6d;
+    animation: slide 12s infinite;
+}
+
+/* Animación tipo romántica original */
+@keyframes slide{
+    0%   { left:100%; }
+    10%  { left:0%; }
+    30%  { left:0%; }
+    40%  { left:-100%; }
+    100% { left:-100%; }
+}
+
+/* Retrasos para que aparezcan una por una */
+.mensaje:nth-child(2){ animation-delay:4s; }
+.mensaje:nth-child(3){ animation-delay:8s; }
+
+/* CARD FINAL */
+.card-final{
+    display:none;
+    background: linear-gradient(135deg,#fff0f5,#ffd6e8);
+    padding:40px;
+    border-radius:30px;
+    text-align:center;
+    box-shadow:0 0 40px rgba(255,0,100,0.6);
+    max-width:600px;
+    animation: aparecer 0.8s ease-in-out forwards;
+    z-index:2;
+}
+
+@keyframes aparecer{
+    from{transform:scale(0); opacity:0;}
+    to{transform:scale(1); opacity:1;}
+}
+
+.decoracion{
+    font-size:30px;
+}
+
+/* CORAZONES */
+.corazon{
+    position:absolute;
+    color:red;
+    font-size:20px;
+    animation: subir 6s linear infinite;
+}
+
+@keyframes subir{
+    from{transform:translateY(100vh);}
+    to{transform:translateY(-10vh);}
+}
+
+/* CANVAS */
+canvas{
+    position:fixed;
+    top:0;
+    left:0;
+    pointer-events:none;
+    z-index:1;
+}
+</style>
+
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<!-- PREGUNTA -->
+<div class="card" id="pregunta">
+    <h1>¿Mi amorshhh quieres ser mi San Valentín? 💖</h1>
+    <button id="si" onclick="aceptar()">SÍ 💘</button>
+    <button id="no">NO 😢</button>
+
+    <div class="slider-container">
+        <div class="mensajes">
+    <div class="mensaje">Pofavo sé mi San Valentín 💕</div>
+    <div class="mensaje">Sé que quieres ser mi San Valentín 💖</div>
+    <div class="mensaje">Acepta, pofavo 🥺</div>
+</div>
+    </div>
+</div>
+
+<!-- CARD FINAL -->
+<div class="card-final" id="final">
+    <div class="decoracion">❤️🌹💖🌸✨</div>
+    <h2>¡Sabía que dirías que sí! 🎆💘</h2>
+    <p id="mensajeFinal"></p>
+    <div class="decoracion">🌹💖🌸❤️✨</div>
+</div>
+
+<script>
+
+/* BOTÓN NO IMPOSIBLE */
+const botonNo = document.getElementById("no");
+function moverBoton(){
+    const x = Math.random() * (window.innerWidth - 100);
+    const y = Math.random() * (window.innerHeight - 50);
+    botonNo.style.left = x + "px";
+    botonNo.style.top = y + "px";
+}
+setInterval(moverBoton, 700);
+
+/* CORAZONES */
+function crearCorazon(){
+    const corazon = document.createElement("div");
+    corazon.classList.add("corazon");
+    corazon.innerHTML="❤️";
+    corazon.style.left=Math.random()*100+"vw";
+    corazon.style.fontSize=Math.random()*20+15+"px";
+    document.body.appendChild(corazon);
+    setTimeout(()=>corazon.remove(),6000);
+}
+setInterval(crearCorazon,500);
+
+/* FUEGOS ARTIFICIALES */
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let particles=[];
+
+function aceptar(){
+    document.body.classList.add("aceptado");
+
+    // OCULTAR PRIMERA CARD
+    document.getElementById("pregunta").style.display="none";
+
+    // MOSTRAR CARD FINAL
+    const finalCard = document.getElementById("final");
+    finalCard.style.display="block";
+
+    const texto = "Gracias por llegar a mi vida y hacer mis dias tan maravillosos🥺. Gracias por ser mi compañera de chocoaventuras, mi cómplice, mi alegría diaria, Gracias por estar en las buenas y las malas. Eres lo más hermoso que me ha pasado; tus locuras encajan perfecto con las mías, te amooooooooo mi princesa hermosa. 💕";
+
+    let i=0;
+
+    function escribir(){
+        if(i<texto.length){
+            document.getElementById("mensajeFinal").innerHTML += texto.charAt(i);
+            i++;
+            setTimeout(escribir,40);
+        }
+    }
+    escribir();
+
+    for(let i=0;i<200;i++){
+        particles.push({
+            x:canvas.width/2,
+            y:canvas.height/2,
+            dx:(Math.random()-0.5)*15,
+            dy:(Math.random()-0.5)*15,
+            life:100
+        });
+    }
+}
+
+function animar(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach((p,index)=>{
+        ctx.fillStyle="hsl("+Math.random()*360+",100%,50%)";
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,3,0,Math.PI*2);
+        ctx.fill();
+        p.x+=p.dx;
+        p.y+=p.dy;
+        p.life--;
+        if(p.life<=0) particles.splice(index,1);
+    });
+    requestAnimationFrame(animar);
+}
+animar();
+
+</script>
+
+</body>
+</html>
